@@ -44,6 +44,7 @@ def grootste_verschil(lst):
     return(grootste)
 
 def zero_one(lst):
+    """zero one functie"""
     freq = count(lst)
     if freq[0] > 12 or freq[0] > freq[1]:
         return False
@@ -132,7 +133,7 @@ def text_comp(directory = 'test.txt', new_directory = 'testcomp.txt'):
                     f2.write('\n')
 
 def bits_verschuiven(ch, n):
-    """functie die alle bitjes naar rechts verplaatst bij een positief getal en naar links bij een negatief getal"""
+    """functie die alle bitjes naar rechts verplaatst bij een positief meegegeven getal en naar links bij een negatief meegegeven getal"""
     # alle bitjes aan een lijst toevoegen
     bit_lst = [bits for bits in str(ch)]
     # voor elk bitje in de lijst
