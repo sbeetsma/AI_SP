@@ -11,24 +11,8 @@ def bot_code_random(code_lengte=4):
     for i in range(code_lengte):
         random_code.append(random.choice(kleuren_lst))
     return random_code
-###
-### functie om kleurcode te raden en te maken voor player
-def kleur_code_player(code_lengte=4):
-    """
-    Functie om een kleurcode te ontvangen via input, deze input wordt gevalideerd.
-    Deze functie wordt gebruikt als player een geheime code wilt maken of wanneer player een code poging maakt"
-    -code_lengte, argument voor de lengte van de kleurcode standaard 4"""
-    valid = False
-    while not valid:
-        code = list(input("input een kleurcode bijv 'RRBB'").upper())
-        # als code niet de juist lengte is start while loop opnieuw
-        if len(code) != code_lengte:
-            continue
-        for kleur in code:
-            if kleur not in kleuren_lst:
-                continue
-            return code
 
+### bot
 def bot_feedback(geheime_code, poging_code, poging):
     """geeft feedback in vorm van een dictionary bijv {zwart:2,wit:2}
     zwart == aantal op de juiste positie en juiste kleur
@@ -63,6 +47,29 @@ def bot_feedback(geheime_code, poging_code, poging):
     print(zwart_wit)
     return(zwart_wit)
 
+### player
+### functie om kleurcode te raden en te maken voor player
+def kleur_code_player(code_lengte=4):
+    """
+    Functie om een kleurcode te ontvangen via input, deze input wordt gevalideerd.
+    Deze functie wordt gebruikt als player een geheime code wilt maken of wanneer player een code poging maakt"
+    -code_lengte, argument voor de lengte van de kleurcode standaard 4"""
+    valid = False
+    while not valid:
+        code = list(input("input een kleurcode bijv 'RRBB'").upper())
+        # als code niet de juist lengte is start while loop opnieuw
+        if len(code) != code_lengte:
+            continue
+        for kleur in code:
+            # als een kleur niet een juiste kleur is start while loop opnieuw
+            if kleur not in kleuren_lst:
+                continue
+            return code
+
+## onderstaande moet nog veranderd worden in betere structuur
+#def mainloop():
+
+#def start_game():
 def player_vs_PC(game_length = 10):
     # tijdelijke functie
     poging = 1
@@ -81,7 +88,10 @@ def player_vs_PC(game_length = 10):
     print("GAME OVER!")
 
 player_vs_PC()
+<<<<<<< HEAD:mastermind/mastermind.py
 
 #def mainloop():
 
 #def start_game():
+=======
+>>>>>>> a758e686eb1e353a6ea22ce6fd3eeead5b920204:Mastermind.py
