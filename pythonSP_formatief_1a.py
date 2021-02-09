@@ -1,104 +1,192 @@
 import random
+def pyramide_for(len):
+    "Functie om pyramide te printen van len lengte op zijn middelpunt met een for loop"
+    for i in range(0, len, 1):
+        print('*'*i)
+    for i in range(len, 0, -1):
+        print('*'*i)
 
-# lijst van kleuren die de pionnen in het spel kunnen hebben
-# Red, Blue, Green, Yellow, Orange, Purple
-kleuren_lst = ['R','B','G','Y','O','P']
+def pyramide_while(len):
+    "Functie om pyramide te printen van len lengte op zijn middelpunt met een while loop"
 
+    counter = 0
+    # while de counter kleiner is dan de gegeven lengte
+    while counter < len:
+        print('*'*counter)
+        counter += 1
+    # while de counter groter is dan 0
+    while counter > 0:
+        print('*'*counter)
+        counter -= 1
+def count(lst):
+    """functie om te tellen hoevaak een int in een lijst voor komt"""
+    freqs = dict()
+    # voor elk getal in de lijst
+    for getal in lst:
+        # als het getal nog niet bestaan de dict
+        if int(getal) not in freqs:
+            # huidig getal komt 1 keer voor
+            freqs[int(getal)] = 1
+        # anders is het getal al eerder voor gekomen
+        else:
+            # huidig aantal komt +1 keer voor
+            freqs[int(getal)] += 1
+    return freqs
 
-### bot
-def bot_code_random(code_lengte=4):
-    """"functie om een random kleur code te genereren"""
-    random_code = []
-    for i in range(code_lengte):
-        random_code.append(random.choice(kleuren_lst))
-    return random_code
+def grootste_verschil(lst):
+    """functie om het grootste verschil tussen opvolgende getallen te berekenen"""
+    grootste = 0
+    # voor elke index in de lijst behalve de laatste
+    for i in range(len(lst)-1):
+        # controleer of het volgende getal min het huidige getal een groter verschil heeft dan het huidige grootste verschil
+        if lst[i+1] - lst[i] > grootste:
+            grootste = lst[i+1] - lst[i]
+    return(grootste)
 
+def zero_one(lst):
+    """zero one functie"""
+    freq = count(lst)
+    if freq[0] > 12 or freq[0] > freq[1]:
+        return False
+    return True
 
+def tekst_check():
+    """functie die om 2 strings vraagt en de index terug geeft waar het eerste verschil is"""
+    # inputs voor versS
+    string_1 = input("Eerste tekst voor vergelijking")
+    string_2 = input("Tweede tekst voor vergelijking")
+    if string_1 == string_2:
+        print('Je eerste en tweede tekst zijn hetzelfde')
+        return
+    i = 0
+    while i < len(string_1) and i < len(string_2):
+        if string_1[i] != string_2[i]:
+            print('strings hebben een verschil vanaf index {}'.format(i))
+            # stop zodra het verschil gevonden is
+            return
+        i += 1
+    # de strings deels hetzelfde maar eentje is langer, print vanaf welke index dit is
+    print('strings hebben een verschil vanaf index {}'.format(i))
 
-### functie om kleurcode te raden en te maken voor player
-def kleur_code_player(code_lengte=4):
-    """
-    Functie om een kleurcode te ontvangen via input, deze input wordt gevalideerd.
-    Deze functie wordt gebruikt als player een geheime code wilt maken of wanneer player een code poging maakt"
-    -code_lengte, argument voor de lengte van de kleurcode standaard 4"""
-    valid = False
-    while not valid:
-        code = list(input("Voer een kleurcode in: ").upper())
-        # als de code niet de juist lengte is start while loop opnieuw
-        if len(code) != code_lengte:
-            # Hier staat wat duidelijker wat er verkeerd gaat
-            print("De code is niet de juiste lengte.")
-            continue
-        for kleur in code:
-            # Hier staat wat duidelijker wat er verkeerd gaat
-            if kleur not in kleuren_lst:
-                print("Je hebt niet de juiste kleuren gekozen")
-                # Ik wist niet hoe ik ervoor zorgde dat het niet telde als een poging.
-                # Dus ik maak de code leeg en dan werkt de functie niet meer, waardoor er geen poging is gedaan.
-                code = []
-                break
-        for kleur in code:
-            if kleur not in kleuren_lst:
+def palindroom(tekst):
+    """functie die controleert of een gegeven tekst een palindroom is"""
+    # als de tekst het zelfde is als zichzelf omgekeerd
+    if tekst == tekst[::-1]:
+        print('woord is palindroom')
+    else:
+        print('woord is geen palindroom')
+
+def sorteren(lst):
+    """functie om een gegeven lijst te sorteren"""
+    # copy van de lijst
+    lst_sorted = lst.copy()
+    # while conditie
+    controleren = True
+    while controleren:
+        # controleren = false tot dat een getal geswapt wordt
+        controleren = False
+        for i in range(len(lst_sorted) - 1):
+            # Als lijst index i groter is dan lijst index i + 1 dan verwissel je de 2 getallen.
+            if lst_sorted[i] > lst_sorted[i + 1]:
+                lst_sorted[i], lst_sorted[i + 1] = lst_sorted[i + 1], lst_sorted[i]
+                # als een getal geswapt is blijf dan doorgaan met controleren/sorteren
+                controleren = True
+    return lst_sorted
+
+def gemiddelde(lst):
+    """functie om het gemiddelde van een gegeven lijst te berekenen en te returnen als een lijst"""
+    return sum(lst) / len(lst)
+
+def gemiddelde_lijst(lst):
+    """functie om het gemiddelde van een gegeven lijst te berekenen en te returnen als een lijst"""
+    lijst_gemiddelde = []
+    for lijst in lst:
+        lijst_gemiddelde.append(gemiddelde(lijst))
+    return lijst_gemiddelde
+
+def getal_raden():
+    """functie om de gebruiker een getal te laten raden tussen de 1 en 10"""
+
+    gok = 0
+    # antwoord is een random number
+    antwoord = random.randrange(1, 10, 1)
+    # zolang de gok niet het antwoord is vraag om een gok
+    while int(gok) != antwoord:
+        gok = input("Welk getal gok je? ")
+    print("Je hebt het getal geraden")
+
+def text_comp(directory = 'test.txt', new_directory = 'testcomp.txt'):
+    """functie die een directiory van een text file mee krijgt en deze compiled naar een aangegeven directory( bijv 'text.txt')"""
+    # open de meegekregen directory (txt file)
+    with open(directory, 'r') as f:
+        # voor elke line in het bestand
+        for lines in f:
+            # strip whitespaces
+            x = lines.strip()
+            # als een line leeg is wordt deze niet toegevoegd aan het nieuwe bestand
+            if x == '':
                 continue
-            return code
+            else:
+                # append de line aan de meegegeven directory (txt file)
+                with open(new_directory, 'a') as f2:
+                    f2.write(x)
+                    f2.write('\n')
 
-def bot_feedback(geheime_code, poging_code, poging):
-    """geeft feedback in vorm van een dictionary bijv {zwart:2,wit:2}
-    zwart == aantal op de juiste positie en juiste kleur
-    wit == aantal juiste kleur maar niet juiste positie"""
-    def zwart(geheime_code, poging_code):
-        """functie om de zwarte pinnen te berekenen"""
-        # aantal zwart
-        aantal = 0
-        # i staat voor index
-        for i in range(len(poging_code)):
-            if poging_code[i] == geheime_code[i]:
-                aantal += 1
-        return aantal
+def bits_verschuiven(ch, n):
+    """functie die alle bitjes naar rechts verplaatst bij een positief meegegeven getal en naar links bij een negatief meegegeven getal"""
+    # alle bitjes aan een lijst toevoegen
+    bit_lst = [bits for bits in str(ch)]
+    # voor elk bitje in de lijst
+    # verschuif de list met indices en maak er weer een string van
+    return "".join(bit_lst[n:] + bit_lst[:n])
 
-    def wit(geheime_code, poging_code):
-        """functie om de witte pinnen te berekenen"""
-        # copy lijst
-        temp_geheime_code = geheime_code.copy()
-        # aantal wit
-        aantal = 0
-        # i staat voor index
-        for i in range(len(poging_code)):
-            if poging_code[i] in temp_geheime_code:
-                # haal de kleur uit de temp lijst (1x ookal staat de kleur er meerdere keren in)
-                temp_geheime_code.remove(poging_code[i])
-                aantal += 1
-        # wit is alleen van de pinnen die alleen de juiste kleur zijn niet positie, dus wit = wit - zwart
-        return aantal - zwart(geheime_code, poging_code)
-    # zwart en wit is aan het begin 0, na de feedback past deze keys aan
-    zwart_wit = {'zwart':0, 'wit':0}
-    zwart_wit['zwart'], zwart_wit['wit'] = zwart(geheime_code, poging_code), wit(geheime_code, poging_code)
-    print(zwart_wit)
-    return(zwart_wit)
+def fib(getal, index0=0, index1=1):
+    """Functie om fib nummer uit te rekenen gegeven zijn index"""
+    # base case
+    if getal <= 1:
+        # [i] ipv [0] zodat bij fib(0) 0 wordt returned en niet 1
+        return (index0, index1)[getal]
+    # blijft fib recursief aanroepen tot basecase bereikt is.
+    return fib(getal - 1, index1, index0 + index1)
 
 
-def player_vs_PC(game_length = 10):
-    # tijdelijke functie
-    poging = 1
-    geheime_code = bot_code_random()
-    print(geheime_code)
-    # Het was een beetje onduidelijk wat ik precies moest invoeren en hoe ik dat moest doen. Ik vind dit duidelijker
-    print("De kleuren waaruit je kunt kiezen zijn: " + str(kleuren_lst))
-    print("Om een kleurcode in te voeren moet je de kleuren naast elkaar zitten. Bijv: RRBB\n")
-    while poging <= game_length:
-        print('poging {}'.format(poging))
-        ### vraag
-        poging_code = kleur_code_player()
-        poging += 1
-        ### feedback
-        feedback = bot_feedback(geheime_code, poging_code, poging)
-        if feedback['zwart'] == 4:
-            print("WIN!")
-            exit()
-    print("GAME OVER!")
+def caesar():
+    """functie die een string vraagt en de een rotatie om een caesar encrypte string te returnen"""
+    # vraag in de tekst en rotatie
+    tekst = input("Input een tekst: ")
+    rotatie = int(input("Geef een rotatie: "))
+    # wordt de uiteindelijk encrypte string (placeholder)
+    tekst_caesar = ''
+    # alfabet
+    abc = 'abcdefghijklmnopqrstuvwxyz'
+    # voor elke character in de string
+    for char in tekst:
+        # spaties worden niet encrypt maar blijven spaties
+        if char == " ":
+            tekst_caesar += char
+        # positie van het character vinden in het alfabet
+        positie = abc.find(char)
+        # nieuwe positie volgens caesar encryptie is (positie + rotatie) modulo 26
+        positie_nieuw = (positie + rotatie) % 26
+        # nieuwe character a.d.h.v de nieuwe positie
+        char_nieuw = abc[positie_nieuw]
+        # nieuwe character aan de tekst_caesar string toevoegen
+        tekst_caesar += char_nieuw
+    return tekst_caesar
 
-player_vs_PC()
 
-#def mainloop():
-
-#def start_game():
+def fizz_buzz():
+    """functie die reeks cijfers print maar ipv cijfers die deelbaar zijn door 3 en of 5 wordt een string geprint"""
+    for i in range(1, 101):
+        # als het getal / 3 en het getal / 5 beide 0 als rest heeft. fizzbuzz
+        if i % 3 == 0 and i % 5 == 0:
+            print("FizzBuzz")
+        # deelbaar door 3 met rest 0. print fizz
+        elif i % 3 == 0:
+            print("Fizz")
+        # deelbaar door 5 met rest 0. print buzz
+        elif i % 5 == 0:
+            print("Buzz")
+        # anders niet deelbaar door 3 of 5. print getal
+        else:
+            print(i)
