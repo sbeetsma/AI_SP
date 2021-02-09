@@ -4,7 +4,6 @@ import random
 # Red, Blue, Green, Yellow, Orange, Purple
 kleuren_lst = ['R','B','G','Y','O','P']
 
-
 ### bot
 def bot_code_random(code_lengte=4):
     """"functie om een random kleur code te genereren"""
@@ -12,9 +11,7 @@ def bot_code_random(code_lengte=4):
     for i in range(code_lengte):
         random_code.append(random.choice(kleuren_lst))
     return random_code
-
-
-
+###
 ### functie om kleurcode te raden en te maken voor player
 def kleur_code_player(code_lengte=4):
     """
@@ -23,20 +20,10 @@ def kleur_code_player(code_lengte=4):
     -code_lengte, argument voor de lengte van de kleurcode standaard 4"""
     valid = False
     while not valid:
-        code = list(input("Voer een kleurcode in: ").upper())
-        # als de code niet de juist lengte is start while loop opnieuw
+        code = list(input("input een kleurcode bijv 'RRBB'").upper())
+        # als code niet de juist lengte is start while loop opnieuw
         if len(code) != code_lengte:
-            # Hier staat wat duidelijker wat er verkeerd gaat
-            print("De code is niet de juiste lengte.")
             continue
-        for kleur in code:
-            # Hier staat wat duidelijker wat er verkeerd gaat
-            if kleur not in kleuren_lst:
-                print("Je hebt niet de juiste kleuren gekozen")
-                # Ik wist niet hoe ik ervoor zorgde dat het niet telde als een poging.
-                # Dus ik maak de code leeg en dan werkt de functie niet meer, waardoor er geen poging is gedaan.
-                code = []
-                break
         for kleur in code:
             if kleur not in kleuren_lst:
                 continue
@@ -76,18 +63,14 @@ def bot_feedback(geheime_code, poging_code, poging):
     print(zwart_wit)
     return(zwart_wit)
 
-
 def player_vs_PC(game_length = 10):
     # tijdelijke functie
     poging = 1
     geheime_code = bot_code_random()
     print(geheime_code)
-    # Het was een beetje onduidelijk wat ik precies moest invoeren en hoe ik dat moest doen. Ik vind dit duidelijker
-    print("De kleuren waaruit je kunt kiezen zijn: " + str(kleuren_lst))
-    print("Om een kleurcode in te voeren moet je de kleuren naast elkaar zitten. Bijv: RRBB\n")
     while poging <= game_length:
         print('poging {}'.format(poging))
-        ### vraag
+        ### vraagG
         poging_code = kleur_code_player()
         poging += 1
         ### feedback
