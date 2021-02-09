@@ -59,10 +59,12 @@ def kleur_code_player(code_lengte=4):
         code = list(input("input een kleurcode bijv 'RRBB'").upper())
         # als code niet de juist lengte is start while loop opnieuw
         if len(code) != code_lengte:
+            print('je code is niet de juiste lengte de code moet {} lang zijn'.format(code_lengte))
             continue
         for kleur in code:
             # als een kleur niet een juiste kleur is start while loop opnieuw
             if kleur not in kleuren_lst:
+                print('kies een code bestaande uit kleuren die beschikbaar zijn!')
                 continue
             return code
 
@@ -75,6 +77,8 @@ def player_vs_PC(game_length = 10):
     poging = 1
     geheime_code = bot_code_random()
     print(geheime_code)
+    print("De kleuren waaruit je kunt kiezen zijn: {}".format(kleuren_lst))
+    print("Om een kleurcode in te voeren moet je de kleuren naast elkaar zitten. Bijv: RRBB\n")
     while poging <= game_length:
         print('poging {}'.format(poging))
         ### vraagG
@@ -88,10 +92,8 @@ def player_vs_PC(game_length = 10):
     print("GAME OVER!")
 
 player_vs_PC()
-<<<<<<< HEAD:mastermind/mastermind.py
+
 
 #def mainloop():
 
 #def start_game():
-=======
->>>>>>> a758e686eb1e353a6ea22ce6fd3eeead5b920204:Mastermind.py
