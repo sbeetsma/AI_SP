@@ -1,13 +1,20 @@
+# imports random, itertools
+# ramdom voor het genereren van een random geheime code en random kiezen uit een lijst combinaties
+# itertools om itertools.product te gebruiken voor het maken van een iterable die over alle mogelijke combinaties itereert.
 import random
 from itertools import *
 
+# bronnen (staan ook bij de betreffende functies):
+    # leerbron uitrekenen witte pinnen https://stackoverflow.com/questions/47773412/mastermind-check-result-python
+    # leerbronnen itertools product  # https://www.youtube.com/watch?v=QXT_aCFYYDA https://www.hackerrank.com/challenges/itertools-product/problem
 
-# lijst van kleuren die de pionnen in het spel kunnen hebben
-# Red, Blue, Green, Yellow, Orange, Purple (ook nog gesorteerd)
+    # YET ANOTHER MASTERMIND STRATEGY, Barteld Kooi, Department of Philosophy, University of Groningen, The Netherlands
 
-kleuren_lst = ['R','B','G','Y','O','P']
+    # Shapiro, E. (1983). Playing Mastermind Logically. SIGART Newsletter, Vol. 85, pp. 28 – 29.
+    # Knuth, D. (1976-1977). The Computer as Master Mind. Journal of Recreational Mathematics, Vol. 9, No. 1, pp. 1–6.
 
-### random geheime code
+
+### PC/bot functies die bij het spel zelf horen
 def bot_geheime_code(code_lengte=4):
     """"functie om een random (geheime) kleur code te genereren
     args:
@@ -60,7 +67,7 @@ def bot_feedback(geheime_code, poging_code):
     zwart_wit['zwart'], zwart_wit['wit'] = zwart(), wit()
     return(zwart_wit)
 
-### player
+### player functies (handmatig kleurcode voor poging/geheime poging en feedback)
 
 def player_kleur_code(code_lengte=4, *arguments):
     """
@@ -101,16 +108,16 @@ def player_feedback(geheime_code, poging_code):
     # zwarte en witte pinnen meer dan 0 en niet meer dan de lengte van de geheime code.
     while zwart < 0 or zwart > code_lengte or wit < 0 or  wit > code_lengte:
         try:
-            zwart = int(input("Aantal zwarte pinnen"))
-            wit = int(input("Aantal witte pinnen"))
+            zwart = int(input("Aantal zwarte pinnen: "))
+            wit = int(input("Aantal witte pinnen: "))
         except ValueError:
             continue
     # values opslaan in dictionary
     zwart_wit['zwart'], zwart_wit['wit'] = zwart, wit
     return zwart_wit
 
-### benodige logica voor de bots
-# todo
+### functies gebruikt door bots
+
 def alle_combinaties(lengte, lst):
     """Genereert een lijst met alle mogelijk combinaties gegeven een lijst met elementen en hoelang een combinatie is
     bijv. (['a', 'b']['a', 'b'], 2) returned [('a', 'a'), ('a', 'b'), ('b', 'a'), ('b', 'b')]
@@ -119,7 +126,7 @@ def alle_combinaties(lengte, lst):
         lst, de lijst die alle elementen bevat waarvan je alle mogelijke combinaties wilt (kleurenlijst)"""
 
     # https://www.youtube.com/watch?v=QXT_aCFYYDA https://www.hackerrank.com/challenges/itertools-product/problem bronnen die gebruikt zijn bij het leren over itertools product
-    # product om een iterable te maken waar elke mogelijke combinatie instaat van lengte repeat met list() kan hier zonder een for loop gelijk een lijst van worden gemaakt
+    # product om een iterable te maken waar elke mogelijke combinatie instaat van lengte repeat met list() een lijst maken van het resultaat van de iterable
 
     return sorted(list(product(lst, repeat=lengte)))
 
@@ -170,7 +177,7 @@ def stap_voorruit(combinaties):
     # dit is de beste(laagste) worst-case.
     return list(min(worst_cases, key=worst_cases.get))
 
-### AI bot functies
+### AI bot functies/heuristieken
 
 def simple_strategy(lengte_code, poging, old_feedback):
     """ Shapiro, E. (1983). Playing Mastermind Logically. SIGART Newsletter, Vol. 85, pp. 28 – 29.
@@ -193,8 +200,11 @@ def simple_strategy(lengte_code, poging, old_feedback):
 
 def worst_case_strategy(lengte_code, poging, old_feedback):
     """"Knuth, D. (1976-1977). The Computer as Master Mind. Journal of Recreational Mathematics, Vol. 9, No. 1,
-pp. 1–6.
-args:
+    pp. 1–6.
+    In het worst case algoritme wordt voor elke mogelijk poging (die consistent is met alle vorige feedback).
+    Gekeken welke feedback deze mogelijke poging zou krijgen voor elk mogelijk antwoord.
+    De poging met de laagste worst case (worst case van het aantal overgebleven mogelijke combinaties na het stellen/vragen van die poging), wordt de vraag die het algoritme stelt.
+    args:
         lengte_code lengte van de geheime code.
         poging, hoeveelste poging in het spel
         old_feedback, alle voorafgaande feedback/vragen uit het spel"""
@@ -220,11 +230,17 @@ args:
         combinaties = alle_combinaties(lengte_code, kleuren_lst)
         # alle mogelijke combinaties consistent met alle feedback
         combinaties = feedback_consistente_combinaties(combinaties, old_feedback)\
-        # return laagste worst case
+        # functie stap_voorruit returned combinatie met laagste worst case
         return stap_voorruit(combinaties)
 
 def sjoerd_strategy(lengte_code, poging, old_feedback):
-    """"
+    """" heuristiek verzonnen door Sjoerd Beetsma.
+    Deze strategie stelt eerst voor elke mogelijke kleur de vraag die volledig uit 1 kleur bestaat bijv. code lengte = 4 en kleuren zijn alleen 'G' 'B' 'Y'
+    Dan vraagt het algoritme eerst 'GGGG' als tweede vraag 'BBBB' etc..
+    Na dat elke kleur gevraagd is werkt het algoritme als volgt:
+    Elke kleur die feedback zwart = 0 en wit =  0 heeft gekregen komt niet voor in de geheime code. Elke combinatie die een van deze kleuren bevat wordt uitgesloten.
+    Uit de overgebleven lijst van mogelijkheden wordt een willekeurig antwoord gekozen.
+
     args:
         lengte_code lengte van de geheime code.
         poging, hoeveelste poging in het spel
@@ -237,18 +253,23 @@ def sjoerd_strategy(lengte_code, poging, old_feedback):
     # elke mogelijke combinatie verwijderen die een kleur bevat waar de feedback 0 zwart en 0 wit op was
     else:
         for zet in old_feedback:
+            # alle vorige pogingen uit de mogelijke combinatie lijst halen
             combinaties.remove(tuple(zet['poging']))
+            # als de feedback  0 zwart en 0 wit is
             if zet['feedback']['zwart'] == 0 and zet['feedback']['wit'] == 0:
                 for kleur in zet['poging']:
                     for combi in combinaties:
                         if kleur in list(combi):
                             combinaties.remove(combi)
-                            break
         return list(random.choice(combinaties))
 
-### gameloop en startup
-def mainloop(raad_functie, feedback_functie, geheime_code_functie, game_length = 10):
+### mainloop van het spel en startup functie
+# lijst van kleuren die de pionnen in het spel kunnen hebben
+# Red, Blue, Green, Yellow, Orange, Purple (ook nog gesorteerd)
+kleuren_lst = ['R','B','G','Y','O','P']
+def mainloop(raad_functie, feedback_functie, geheime_code_functie, kleuren, game_length = 10):
     """"Mainloop van het spel Mastermind
+
     args:
         raad_functie, de functie waarmee de vraag gesteld gaat worden
         feedback_functie, de functie waarmee de feedback bepaald zal worden
@@ -276,17 +297,27 @@ def mainloop(raad_functie, feedback_functie, geheime_code_functie, game_length =
         print('{} geeft feedback: {}'.format(poging_code, feedback))
         # win conditie
         if feedback['zwart'] == 4:
-            print("WIN!")
+            print("WIN! WIN! WIN! :)")
             break
         # lose conditie
         elif poging_nr == game_length:
-            print("LOSE!")
+            print("GAME OVER! :(")
+            print('de geheime code was {}'.format(geheime_code))
         # poging + 1
         poging_nr += 1
-    return poging_nr-1
 
-def start_game():
-    """Functie voor het startmenu van het spel Mastermind, vanuit hier wordt het spel gestart met een bepaalde game mode bepaald door de gebruiker"""
+def start_up():
+    """
+    Functie voor het startmenu van het spel Mastermind, vanuit hier wordt het spel gestart met een bepaalde game mode bepaald door de gebruiker.
+    Spel uitleg:
+    Het spel mastermind heeft als doel om de geheime (kleur) code te kraken.
+    Volgens de standaard regels zijn er 6 verschillende kleuren en is de geheime code 4 lang.
+    Er is een codemaker en een codekraker.
+    De codekraker maakt de code, vervolgens doet de codekraker een vraag en geeft de codekraker antwoord(feedback).
+    Het antwoord bestaat uit witte en zwarte pinnen. Zwart = correcte positie & kleur. Wit = correcte kleur & niet correcte positie.
+    Als de code wordt geraden in (standaard) 10 pogingen heeft de codekraker gewonnen.
+    Anders heeft de codekraker verloren.
+    """
     print("|-----------------------|")
     print("|                       |")
     print("|  M A S T E R M I N D  |")
@@ -305,28 +336,30 @@ def start_game():
     max_pogingen = 0
     while max_pogingen <= 0:
         try:
-            max_pogingen = int(input('max aantal pogingen? geef een heel getal boven de 0: '))
+            max_pogingen = int(input('max aantal pogingen (standaard 10)? geef een heel getal boven de 0 of druk gelijk op enter voor standaard aantal pogingen: '))
+        # als input geen (positieve) int is max pogingen = standaard aantal pogingen ( 10 )
         except ValueError:
-            continue
+                max_pogingen = 10
+                break
     # player
     if game_mode == 'PvP':
-        mainloop(player_kleur_code, player_feedback, player_kleur_code, max_pogingen)
+        mainloop(player_kleur_code, player_feedback, player_kleur_code, kleuren_lst, max_pogingen)
     elif game_mode == 'PvPC':
-        mainloop(player_kleur_code, bot_feedback, bot_geheime_code, max_pogingen)
+        mainloop(player_kleur_code, bot_feedback, bot_geheime_code, kleuren_lst, max_pogingen)
     # simple strategy
     elif game_mode == 'B1vP':
-        mainloop(simple_strategy, player_feedback, player_kleur_code, max_pogingen)
+        mainloop(simple_strategy, player_feedback, player_kleur_code, kleuren_lst, max_pogingen)
     elif game_mode == 'B1vPC':
-        mainloop(simple_strategy, bot_feedback, bot_geheime_code, max_pogingen)
+        mainloop(simple_strategy, bot_feedback, bot_geheime_code, kleuren_lst,max_pogingen)
     # worst case strategy
     elif game_mode == 'B2vP':
-        mainloop(worst_case_strategy, player_feedback, player_kleur_code, max_pogingen)
+        mainloop(worst_case_strategy, player_feedback, player_kleur_code, kleuren_lst,max_pogingen)
     elif game_mode == 'B2vPC':
-        mainloop(worst_case_strategy, bot_feedback, bot_geheime_code, max_pogingen)
+        mainloop(worst_case_strategy, bot_feedback, bot_geheime_code, kleuren_lst,max_pogingen)
     # sjoerd strategy
     elif game_mode == 'B3vP':
-        mainloop(sjoerd_strategy, player_feedback, player_kleur_code, max_pogingen)
+        mainloop(sjoerd_strategy, player_feedback, player_kleur_code, kleuren_lst,max_pogingen)
     elif game_mode == 'B3vPC':
-        mainloop(sjoerd_strategy, bot_feedback, bot_geheime_code, max_pogingen)
+        mainloop(sjoerd_strategy, bot_feedback, bot_geheime_code, kleuren_lst,max_pogingen)
 
-start_game()
+start_up()
