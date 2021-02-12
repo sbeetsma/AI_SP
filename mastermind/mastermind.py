@@ -12,6 +12,7 @@ def bot_geheime_code(code_lengte=4):
     """"functie om een random (geheime) kleur code te genereren
     args:
         code_lengte, de lengte van de kleurcode standaard 4"""
+
     random_code = []
     # for lengte van de geheime code
     for i in range(code_lengte):
@@ -26,8 +27,10 @@ def bot_feedback(geheime_code, poging_code):
     args:
         geheime_code, de geheime code uit het spel
         poging_code, de vraag over de geheime code"""
+
     def zwart():
         """nested functie om de zwarte pinnen te berekenen"""
+
         # aantal zwart
         aantal = 0
         # i staat voor index
@@ -39,6 +42,7 @@ def bot_feedback(geheime_code, poging_code):
     def wit():
         """nested functie om de witte pinnen te berekenen
         hulpbron voor uitrekenen witte pinnen https://stackoverflow.com/questions/47773412/mastermind-check-result-python"""
+
         # copy lijst
         temp_geheime_code = geheime_code.copy()
         # aantal wit
@@ -59,12 +63,13 @@ def bot_feedback(geheime_code, poging_code):
 ### player
 
 def player_kleur_code(code_lengte=4, *arguments):
-    ### *arguments zodat ik efficient of deze functie of een bot functie kan aanroepen voor het gegeven van een antwoord met dezelfde parameters die in deze functie niet nodig zijn
     """
     Functie om een kleurcode te ontvangen via input, deze input wordt gevalideerd.
     Deze functie wordt gebruikt als player een geheime code wilt maken of wanneer player een code poging maakt"
     args:
-        code_lengte, de lengte van de kleurcode standaard 4"""
+        code_lengte, de lengte van de kleurcode standaard 4
+        *arguments zodat de gameloop deze functie of een bot functie kan aanroepen met dezelfde parameters """
+
     invalid = True
     while invalid:
         code = list(input("input een code bijv 'RRBB': ").upper())
@@ -87,6 +92,7 @@ def player_feedback(geheime_code, poging_code):
     args:
         geheime_code, de geheime code uit het spel
         poging_code, de vraag over de geheime code"""
+
     zwart_wit = dict()
     code_lengte = len(poging_code)
     print('geheime code is {}'.format(geheime_code))
@@ -107,16 +113,21 @@ def player_feedback(geheime_code, poging_code):
 # todo
 def alle_combinaties(lengte, lst):
     """Genereert een lijst met alle mogelijk combinaties gegeven een lijst met elementen en hoelang een combinatie is
-    bijv. (['a', 'b']['a', 'b'], 2) returned [('a', 'a'), ('a', 'b'), ('b', 'a'), ('b', 'b')]"""
+    bijv. (['a', 'b']['a', 'b'], 2) returned [('a', 'a'), ('a', 'b'), ('b', 'a'), ('b', 'b')]
+    args:
+        lengte, integer die aanduid hoelang elke combinatie moet zijn in de lijst met alle combinaties
+        lst, de lijst die alle elementen bevat waarvan je alle mogelijke combinaties wilt (kleurenlijst)"""
+
     # https://www.youtube.com/watch?v=QXT_aCFYYDA https://www.hackerrank.com/challenges/itertools-product/problem bronnen die gebruikt zijn bij het leren over itertools product
     # product om een iterable te maken waar elke mogelijke combinatie instaat van lengte repeat met list() kan hier zonder een for loop gelijk een lijst van worden gemaakt
-    return list(product(lst, repeat=lengte))
 
-    # product om een iterable te maken waar elke mogelijke combinatie instaat
+    return sorted(list(product(lst, repeat=lengte)))
 
 def feedback_consistente_combinaties(alle_combi_lst, old_feedback):
-    """returned een lijst met combinaties die consistent is met de alle voorafgaande feedback."""
-
+    """returned een lijst met combinaties die consistent is met de alle voorafgaande feedback.
+    args:
+        alle_combi_lst, een lijst van alle mogelijke combinaties (return van de functie alle_combinaties)
+        old_feedback, lijst die dictionaries bevat met informatie over de oude pogingen/vragen en feedback"""
     # voor elk antwoord in de oude feedback
     for antwoord in old_feedback:
         # nieuwe lijst weer leeg maken per oude feedback( wordt de lijst met nieuwe mogelijke combinaties )
@@ -129,32 +140,34 @@ def feedback_consistente_combinaties(alle_combi_lst, old_feedback):
                 mogelijke_antwoorden.append(mogelijk_antwoord)
         # alle mogelijke combinaties worden nu alle mogelijke antwoorden zo word de lijst mogelijke antwoorden steeds kleiner na elke feedback
         alle_combi_lst = mogelijke_antwoorden.copy()
-    return sorted(mogelijke_antwoorden)
+    return mogelijke_antwoorden
 
 def stap_voorruit(combinaties):
-    """" returned de poging met de laagste worst_case gebasseerd op een stap voorruit kijken.
-         Kijkt een stap voorruit welke feedback elk mogelijk antwoord mogelijk zou kunnen krijgen
-         hier komt een worst case uit per mogelijke combinatie de combinatie met de laagste worstcase is de vraag / poging."""
+    """"Kijkt een stap voorruit, welke feedback elk mogelijk antwoord mogelijk zou kunnen krijgen
+         hier komt een worst case uit per mogelijke antwoord de combinatie met de laagste worstcase is de vraag / poging.
+         args:
+            combinaties, een lijst met alle mogelijke combinaties die consistent zijn met de voorafgaande feedback (return van feedback_consistente_combinaties)"""
     # dictionary voor hoevaak elke mogelijke feedback kan voorkomen
     mogelijkheden = {}
     # dictionary voor de worst_case (=hoogste value in mogelijkheden) van alle combinaties
     worst_cases = {}
-    # for loop om worstcase van elke mogelijke combinatie aan dictionary toetevoegen
+    # for loop om worstcase van elke mogelijke "poging"/antwoord aan dictionary toetevoegen
     for poging in combinaties:
-        # for loop om hoeveelheid van elke feedback bij te houden per combi
-        for oplossing in combinaties:
+        # for loop om mogelijke feedback bij te houden van elke mogelijke poging met elk mogelijk antwoord
+        for antwoord in combinaties:
             # str van de feedback maken omdat dict geen key kan zijn
-            fb = str(bot_feedback(list(oplossing), list(poging)))
+            fb = str(bot_feedback(list(antwoord), list(poging)))
             if fb in mogelijkheden:
                 mogelijkheden[fb] += 1
             else:
                 mogelijkheden[fb] = 1
-        # voeg de worst_case uit de mogelijkheden toe aan de worst_cases
+        # elke mogelijke poging heeft een worst_case (de grooste waarde uit mogelijkheden) voeg deze toe aan de worst_cases dictionary
         worst_cases[(poging)] = (max(mogelijkheden.values()))
         # clear de mogelijkheden dict
         mogelijkheden = {}
 
-    # return de key van de laagste value in de worst_cases
+    # return de key(=poging/vraag) van de laagste value(worst-case) in de worst_cases dictionary.
+    # dit is de beste(laagste) worst-case.
     return list(min(worst_cases, key=worst_cases.get))
 
 ### AI bot functies
@@ -162,7 +175,11 @@ def stap_voorruit(combinaties):
 def simple_strategy(lengte_code, poging, old_feedback):
     """ Shapiro, E. (1983). Playing Mastermind Logically. SIGART Newsletter, Vol. 85, pp. 28 – 29.
     Kiest een random antwoord uit een lijst met alle mogelijke combinaties voor de eerste poging
-    De volgende poging(en) zijn consistent met de gegeven feedback op voorafgaande poging(en) tot dat de geheime combinatie geraden is"""
+    De volgende poging(en) zijn consistent met de gegeven feedback op voorafgaande poging(en) tot dat de geheime combinatie geraden is
+    args:
+        lengte_code lengte van de geheime code.
+        poging, hoeveelste poging in het spel
+        old_feedback, alle voorafgaande feedback/vragen uit het spel"""
     # lijst van alle mogelijke combinaties
     combinaties = alle_combinaties(lengte_code, kleuren_lst)
     if poging == 1:
@@ -177,7 +194,10 @@ def simple_strategy(lengte_code, poging, old_feedback):
 def worst_case_strategy(lengte_code, poging, old_feedback):
     """"Knuth, D. (1976-1977). The Computer as Master Mind. Journal of Recreational Mathematics, Vol. 9, No. 1,
 pp. 1–6.
-"""
+args:
+        lengte_code lengte van de geheime code.
+        poging, hoeveelste poging in het spel
+        old_feedback, alle voorafgaande feedback/vragen uit het spel"""
     def eerste_poging():
         """hardcoded eerste poging voor de worst case strategy returned een code waarvan de eerste helft een random kleur is en de andere helft een andere random kleur"""
         eerste_poging = []
@@ -204,6 +224,11 @@ pp. 1–6.
         return stap_voorruit(combinaties)
 
 def sjoerd_strategy(lengte_code, poging, old_feedback):
+    """"
+    args:
+        lengte_code lengte van de geheime code.
+        poging, hoeveelste poging in het spel
+        old_feedback, alle voorafgaande feedback/vragen uit het spel"""
     combinaties = alle_combinaties(lengte_code, kleuren_lst)
     # eerste pogingen 4x dezelfde kleur als antwoord geven tot dat elke unieke kleur geweest is
     if poging <= len(kleuren_lst):
@@ -239,12 +264,12 @@ def mainloop(raad_functie, feedback_functie, geheime_code_functie, game_length =
     geheime_code = geheime_code_functie()
     print('Geheime code is klaar')
     code_lengte = len(geheime_code)
-    # zolang poging kleiner of gelijk aan game lengte is (std =10)
+    # zolang poging kleiner of gelijk aan game lengte is
     while poging_nr <= game_length:
         print('poging {} uit de {}'.format(poging_nr, game_length))
         ### vraag / poging
         poging_code = raad_functie(code_lengte, poging_nr, old_feedback)
-        ### feedback
+        ### antwoord / feedback
         feedback = feedback_functie(geheime_code, poging_code)
         # voeg dictiorynary van poging + feedback toe aan lijst van alle feedback
         old_feedback.append({'poging':poging_code, 'feedback':feedback})
@@ -254,10 +279,11 @@ def mainloop(raad_functie, feedback_functie, geheime_code_functie, game_length =
             print("WIN!")
             break
         # lose conditie
-        if poging_nr == game_length and feedback['zwart'] != 4:
+        elif poging_nr == game_length:
             print("LOSE!")
         # poging + 1
         poging_nr += 1
+    return poging_nr-1
 
 def start_game():
     """Functie voor het startmenu van het spel Mastermind, vanuit hier wordt het spel gestart met een bepaalde game mode bepaald door de gebruiker"""
