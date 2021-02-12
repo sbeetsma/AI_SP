@@ -12,3 +12,23 @@ Instructies progamma starten:
 2. unzip alle bestanden
 3. open de map mastermind
 4. open het bestand mastermind.py
+
+Let op: 
+    bij het maken van het game mode keuze (eerste stap na het starten progamma).
+    Input moet een van de volgende strings zijn 'PvP', 'PvPC', 'B1vP', 'B1vPC', 'B2vP', 'B2vPC', 'B3vP', 'B3vPC'
+    
+    P = Player / Echte speler
+    PC = PC (automatisch feedback geven en automatisch geheime coden genereren)
+    
+    B1 = simple strategy
+    B2 = worst case strategy
+    B3 = sjoerd strategy (eigen heuristiek)
+    
+    
+leerbronnen (staan ook bij de betreffende functies):
+    leerbron uitrekenen witte pinnen https://stackoverflow.com/questions/47773412/mastermind-check-result-python
+    leerbronnen itertools product https://www.youtube.com/watch?v=QXT_aCFYYDA https://www.hackerrank.com/challenges/itertools-product/problem
+bronnen algoritmes/heuristieken
+YET ANOTHER MASTERMIND STRATEGY, Barteld Kooi, Department of Philosophy, University of Groningen, The Netherlands
+    Shapiro, E. (1983). Playing Mastermind Logically. SIGART Newsletter, Vol. 85, pp. 28 – 29.
+    Knuth, D. (1976-1977). The Computer as Master Mind. Journal of Recreational Mathematics, Vol. 9, No. 1, pp. 1–6.
